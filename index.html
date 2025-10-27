@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>硬质合金查询</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 6px;
+      font-size: 16px; /* 增加基础字体大小 */
+      line-height: 1.4; /* 增加行高提高可读性 */
+    }
+
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.98);
+      padding: 12px 10px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+      padding: 0 6px;
+    }
+
+    h1 {
+      color: #2c3e50;
+      font-size: 1.4em; /* 增加标题字体大小 */
+      margin-bottom: 6px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: #7f8c8d;
+      font-size: 0.9em; /* 增加副标题字体大小 */
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .search-section {
+      background: white;
+      padding: 14px 10px;
+      border-radius: 8px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+      margin-bottom: 14px;
+    }
+
+    .search-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px; /* 增加间距 */
+      margin-bottom: 14px;
+    }
+
+    .search-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 5px; /* 增加标签下边距 */
+      font-size: 0.95em; /* 增加标签字体大小 */
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    input {
+      padding: 12px 10px; /* 增加输入框内边距 */
+      border: 1px solid #e9ecef;
+      border-radius: 5px;
+      font-size: 16px; /* 增加输入框字体大小 */
+      transition: all 0.2s ease;
+      background: #f8f9fa;
+      width: 100%;
+      -webkit-appearance: none;
+      min-height: 48px; /* 增加输入框高度 */
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px; /* 增加按钮间距 */
+      justify-content: center;
+      margin-top: 8px;
+      flex-direction: column;
+    }
+
+    button {
+      padding: 14px 16px; /* 增加按钮内边距 */
+      border: none;
+      border-radius: 5px;
+      font-size: 16px; /* 增加按钮字体大小 */
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 48px; /* 增加按钮高度 */
+    }
+
+    .search-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      box-shadow: 0 1px 6px rgba(102, 126, 234, 0.3);
+    }
+
+    .search-btn:active {
+      transform: scale(0.98);
+      box-shadow: 0 1px 3px rgba(102, 126, 234, 0.4);
+    }
+
+    .clear-btn {
+      background: #95a5a6;
+      color: white;
+    }
+
+    .clear-btn:active {
+      background: #7f8c8d;
+      transform: scale(0.98);
+    }
+
+    .results-section {
+      background: white;
+      padding: 14px 10px;
+      border-radius: 8px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    .results-header {
+      font-size: 1.2em; /* 增加结果标题字体大小 */
+      color: #2c3e50;
+      margin-bottom: 12px;
+      text-align: center;
+      font-weight: 600;
+      padding: 0 3px;
+    }
+
+    .result-item {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      padding: 16px 12px; /* 增加结果项内边距 */
+      border-radius: 8px;
+      border-left: 2px solid #667eea;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .result-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px; /* 增加标题区域间距 */
+      margin-bottom: 10px;
+    }
+
+    .result-title {
+      font-size: 1.1em; /* 增加结果标题字体大小 */
+      font-weight: 700;
+      color: #2c3e50;
+      line-height: 1.2;
+    }
+
+    .match-badge {
+      padding: 5px 8px; /* 增加徽章内边距 */
+      border-radius: 10px;
+      font-size: 0.85em; /* 增加徽章字体大小 */
+      font-weight: 600;
+      text-align: center;
+      width: fit-content;
+    }
+
+    .perfect-match {
+      background: linear-gradient(135deg, #00b09b, #96c93d);
+      color: white;
+    }
+
+    .recommend {
+      background: linear-gradient(135deg, #ff9a9e, #fecfef);
+      color: white;
+    }
+
+    .certified {
+      background: linear-gradient(135deg, #a8c0ff, #3f4c6b);
+      color: white;
+    }
+
+    .exceed-warning {
+      background: linear-gradient(135deg, #ff6b6b, #ffa726);
+      color: white;
+    }
+
+    .property-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: white;
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      font-size: 0.9em; /* 增加表格字体大小 */
+    }
+
+    .property-table th {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 8px 6px; /* 增加表头内边距 */
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9em; /* 增加表头字体大小 */
+      white-space: nowrap;
+    }
+
+    .property-table td {
+      padding: 6px; /* 增加表格单元格内边距 */
+      border-bottom: 1px solid #e9ecef;
+      word-break: break-word;
+      vertical-align: top;
+      line-height: 1.3;
+    }
+
+    .property-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .property-name {
+      font-weight: 600;
+      color: #2c3e50;
+      width: 60px; /* 增加属性名称列宽度 */
+      white-space: nowrap;
+      font-size: 0.9em; /* 增加属性名称字体大小 */
+    }
+
+    .match-status {
+      text-align: center;
+      padding: 5px 3px; /* 增加状态单元格内边距 */
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 0.85em; /* 增加状态字体大小 */
+      min-width: 50px; /* 增加状态列最小宽度 */
+    }
+
+    .status-match {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-mismatch {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .status-exceed {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    .no-match {
+      text-align: center;
+      padding: 24px 16px; /* 增加无结果区域内边距 */
+      color: #7f8c8d;
+      font-size: 1em; /* 增加无结果字体大小 */
+    }
+
+    .no-match div:first-child {
+      font-size: 2em; /* 增加图标大小 */
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    .match-summary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 10px; /* 增加摘要内边距 */
+      border-radius: 5px;
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9em; /* 增加摘要字体大小 */
+      line-height: 1.2;
+    }
+
+    .exceed-summary {
+      background: linear-gradient(135deg, #ff6b6b, #ffa726);
+      color: white;
+      padding: 10px; /* 增加警告摘要内边距 */
+      border-radius: 5px;
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9em; /* 增加警告摘要字体大小 */
+      line-height: 1.2;
+    }
+
+    .data-source {
+      font-size: 0.8em; /* 增加数据来源字体大小 */
+      color: #6c757d;
+      font-style: italic;
+    }
+
+    .exceed-warning-text {
+      color: #dc3545;
+      font-weight: 600;
+      font-size: 0.8em; /* 增加警告文本字体大小 */
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+
+    /* 超小屏手机优化 */
+    @media (max-width: 320px) {
+      body {
+        padding: 4px;
+        font-size: 14px; /* 增加超小屏基础字体大小 */
+      }
+      
+      .container {
+        padding: 10px 8px;
+      }
+      
+      h1 {
+        font-size: 1.3em;
+      }
+      
+      .search-section,
+      .results-section {
+        padding: 12px 8px;
+      }
+      
+      input {
+        padding: 10px 8px;
+        font-size: 15px;
+        min-height: 44px;
+      }
+      
+      button {
+        padding: 12px 14px;
+        min-height: 44px;
+        font-size: 15px;
+      }
+      
+      .property-table {
+        font-size: 0.85em;
+      }
+      
+      .property-table th,
+      .property-table td {
+        padding: 5px;
+      }
+    }
+
+    /* 小屏手机优化 */
+    @media (min-width: 321px) and (max-width: 375px) {
+      body {
+        padding: 5px;
+        font-size: 15px;
+      }
+      
+      .container {
+        padding: 11px 9px;
+      }
+    }
+
+    /* 平板设备适配 */
+    @media (min-width: 480px) {
+      body {
+        padding: 10px;
+        font-size: 16px;
+      }
+      
+      .container {
+        padding: 18px 14px;
+      }
+      
+      h1 {
+        font-size: 1.6em;
+      }
+      
+      .button-group {
+        flex-direction: row;
+      }
+      
+      button {
+        width: auto;
+        min-width: 120px;
+      }
+      
+      .search-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      
+      .property-table {
+        font-size: 0.95em;
+      }
+    }
+
+    /* 桌面设备适配 */
+    @media (min-width: 768px) {
+      body {
+        padding: 12px;
+      }
+      
+      .container {
+        max-width: 900px;
+        padding: 20px 16px;
+      }
+      
+      h1 {
+        font-size: 1.8em;
+      }
+      
+      .search-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .property-table {
+        font-size: 1em;
+      }
+    }
+
+    /* 大屏设备适配 */
+    @media (min-width: 1024px) {
+      .search-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    /* 防止iOS缩放 */
+    input, select, textarea {
+      font-size: 16px;
+    }
+
+    /* 触摸设备优化 */
+    @media (hover: none) and (pointer: coarse) {
+      button:active {
+        transform: scale(0.96);
+      }
+      
+      .result-item:active {
+        opacity: 0.9;
+      }
+    }
+
+    /* 滚动条优化 */
+    .results {
+      max-height: 50vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .results::-webkit-scrollbar {
+      width: 4px; /* 增加滚动条宽度 */
+    }
+
+    .results::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 2px;
+    }
+
+    .results::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 2px;
+    }
+
+    .results::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+
+    /* 表格响应式优化 */
+    @media (max-width: 480px) {
+      .property-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      
+      .property-table th,
+      .property-table td {
+        min-width: 70px; /* 增加表格最小宽度 */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔍 硬质合金查询</h1>
+      <div class="subtitle">输入产品属性参数，快速匹配最适合的硬质合金牌号</div>
+    </div>
+
+    <div class="search-section">
+      <div class="search-grid">
+        <div class="search-group">
+          <label>📊 密度</label>
+          <input type="number" id="density" step="0.01" placeholder="输入密度">
+        </div>
+        <div class="search-group">
+          <label>💎 硬度</label>
+          <input type="number" id="hardness" step="0.1" placeholder="输入硬度">
+        </div>
+        <div class="search-group">
+          <label>🧲 矫顽磁力</label>
+          <input type="number" id="coercivity" step="0.1" placeholder="输入矫顽磁力">
+        </div>
+        <div class="search-group">
+          <label>⚡ 钴磁</label>
+          <input type="number" id="cobalt" step="0.01" placeholder="输入钴磁">
+        </div>
+        <div class="search-group">
+          <label>🛡️ 强度</label>
+          <input type="number" id="strength" step="1" placeholder="输入强度">
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button class="search-btn" onclick="search()">
+          <span>🔍 查询匹配</span>
+        </button>
+        <button class="clear-btn" onclick="clearSearch()">
+          <span>🗑️ 清空输入</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="results-section">
+      <div class="results-header">📋 匹配结果</div>
+      <div class="results" id="results">
+        <div class="no-match">
+          <div>🔍</div>
+          <div>请输入查询条件，系统将为您推荐最匹配的硬质合金牌号</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 完整的Excel数据（这里保持与之前相同的数据）
+    const data = [
+       // 耐磨合金事业部
+      { dept: "耐磨合金事业部", brand: "YG6A", density: 14.65, hardness: 92.6, coercivity: 24.4, cobalt: 5.25, strength: 2000, prod_density: null, prod_hardness: null, prod_coercivity: null, prod_cobalt: null, prod_strength: null },
+      { dept: "耐磨合金事业部", brand: "YG6X", density: 14.85, hardness: 91.9, coercivity: 19.5, cobalt: 5.35, strength: 2200, prod_density: 14.85, prod_hardness: 91.7, prod_coercivity: 18.8, prod_cobalt: 5.3, prod_strength: 2200 },
+      { dept: "耐磨合金事业部", brand: "YG8K", density: 14.62, hardness: 89, coercivity: 8.8, cobalt: 7.17, strength: 2500, prod_density: 14.62, prod_hardness: 88.5, prod_coercivity: 8.6, prod_cobalt: 7.1, prod_strength: 2500 },
+      // ... 其余数据保持不变
+    ];
+
+    // 计算两个数值之间的绝对差
+    function diff(a, b) {
+      if (a === null || b === null) return Infinity;
+      return Math.abs(a - b);
+    }
+
+    // 检查是否超出参考数据2倍
+    function checkExceedReference(input, referenceValue) {
+      if (input === null || referenceValue === null) return false;
+      return input > referenceValue * 2;
+    }
+
+    // 获取所有数据的参考范围
+    function getReferenceRanges() {
+      const ranges = {
+        density: { min: Infinity, max: -Infinity },
+        hardness: { min: Infinity, max: -Infinity },
+        coercivity: { min: Infinity, max: -Infinity },
+        cobalt: { min: Infinity, max: -Infinity },
+        strength: { min: Infinity, max: -Infinity }
+      };
+
+      data.forEach(item => {
+        const values = [
+          item.prod_density !== null ? item.prod_density : item.density,
+          item.prod_hardness !== null ? item.prod_hardness : item.hardness,
+          item.prod_coercivity !== null ? item.prod_coercivity : item.coercivity,
+          item.prod_cobalt !== null ? item.prod_cobalt : item.cobalt,
+          item.prod_strength !== null ? item.prod_strength : item.strength
+        ];
+
+        const properties = ['density', 'hardness', 'coercivity', 'cobalt', 'strength'];
+        
+        properties.forEach((prop, index) => {
+          if (values[index] !== null) {
+            ranges[prop].min = Math.min(ranges[prop].min, values[index]);
+            ranges[prop].max = Math.max(ranges[prop].max, values[index]);
+          }
+        });
+      });
+
+      return ranges;
+    }
+
+    // 清空搜索框
+    function clearSearch() {
+      document.getElementById('density').value = '';
+      document.getElementById('hardness').value = '';
+      document.getElementById('coercivity').value = '';
+      document.getElementById('cobalt').value = '';
+      document.getElementById('strength').value = '';
+      document.getElementById('results').innerHTML = `
+        <div class="no-match">
+          <div>🔍</div>
+          <div>请输入查询条件，系统将为您推荐最匹配的硬质合金牌号</div>
+        </div>
+      `;
+    }
+
+    // 搜索函数
+    function search() {
+      const density = parseFloat(document.getElementById('density').value) || null;
+      const hardness = parseFloat(document.getElementById('hardness').value) || null;
+      const coercivity = parseFloat(document.getElementById('coercivity').value) || null;
+      const cobalt = parseFloat(document.getElementById('cobalt').value) || null;
+      const strength = parseFloat(document.getElementById('strength').value) || null;
+
+      const inputs = [density, hardness, coercivity, cobalt, strength];
+      const inputCount = inputs.filter(v => v !== null).length;
+
+      // 如果没有输入任何值，显示提示
+      if (inputCount === 0) {
+        document.getElementById('results').innerHTML = `
+          <div class="no-match">
+            <div>⚠️</div>
+            <div>请输入至少一个搜索条件</div>
+          </div>
+        `;
+        return;
+      }
+
+      let candidates = [];
+      const referenceRanges = getReferenceRanges();
+
+      // 计算每个项目的匹配度
+      data.forEach(item => {
+        const prod_density = item.prod_density !== null ? item.prod_density : item.density;
+        const prod_hardness = item.prod_hardness !== null ? item.prod_hardness : item.hardness;
+        const prod_coercivity = item.prod_coercivity !== null ? item.prod_coercivity : item.coercivity;
+        const prod_cobalt = item.prod_cobalt !== null ? item.prod_cobalt : item.cobalt;
+        const prod_strength = item.prod_strength !== null ? item.prod_strength : item.strength;
+
+        const values = [prod_density, prod_hardness, prod_coercivity, prod_cobalt, prod_strength];
+        
+        // 计算每个属性的差异
+        const diffs = inputs.map((input, index) => 
+          input !== null && values[index] !== null ? diff(input, values[index]) : Infinity
+        );
+
+        // 检查是否有属性超出参考范围2倍
+        const exceedFlags = inputs.map((input, index) => {
+          const propNames = ['density', 'hardness', 'coercivity', 'cobalt', 'strength'];
+          return checkExceedReference(input, referenceRanges[propNames[index]].max);
+        });
+
+        const hasExceeded = exceedFlags.some(flag => flag);
+        const exceedCount = exceedFlags.filter(flag => flag).length;
+
+        // 计算总差异
+        const totalDiff = diffs.reduce((sum, diff) => 
+          sum + (diff !== Infinity ? diff : 1000), 0
+        );
+
+        // 计算匹配数量
+        const matchCount = diffs.filter(diff => diff === 0).length;
+
+        // 检查是否完全匹配
+        const isPerfectMatch = inputs.every((input, index) => 
+          input === null || (values[index] !== null && input === values[index])
+        );
+
+        candidates.push({
+          ...item,
+          matchCount,
+          totalDiff,
+          isPerfectMatch,
+          hasExceeded,
+          exceedCount,
+          exceedFlags,
+          isUsingCertified: item.prod_density === null || item.prod_hardness === null || 
+                           item.prod_coercivity === null || item.prod_cobalt === null || 
+                           item.prod_strength === null
+        });
+      });
+
+      // 排序候选项目
+      candidates.sort((a, b) => {
+        if (a.isPerfectMatch && !b.isPerfectMatch) return -1;
+        if (!a.isPerfectMatch && b.isPerfectMatch) return 1;
+        
+        if (b.matchCount !== a.matchCount) {
+          return b.matchCount - a.matchCount;
+        }
+        return a.totalDiff - b.totalDiff;
+      });
+
+      // 选择最佳匹配
+      const bestMatch = candidates[0];
+
+      displayResult(bestMatch, inputs, referenceRanges);
+    }
+
+    // 显示单个结果
+    function displayResult(item, inputs, referenceRanges) {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      if (!item) {
+        resultsDiv.innerHTML = `
+          <div class="no-match">
+            <div>❌</div>
+            <div>未找到匹配的牌号</div>
+          </div>
+        `;
+        return;
+      }
+
+      const prod_density = item.prod_density !== null ? item.prod_density : item.density;
+      const prod_hardness = item.prod_hardness !== null ? item.prod_hardness : item.hardness;
+      const prod_coercivity = item.prod_coercivity !== null ? item.prod_coercivity : item.coercivity;
+      const prod_cobalt = item.prod_cobalt !== null ? item.prod_cobalt : item.cobalt;
+      const prod_strength = item.prod_strength !== null ? item.prod_strength : item.strength;
+
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'result-item';
+      
+      // 创建标题和徽章
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'result-header';
+      
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'result-title';
+      titleDiv.textContent = `${item.dept} - 牌号 ${item.brand}`;
+      
+      const badgeDiv = document.createElement('div');
+      badgeDiv.className = 'match-badge ';
+      
+      if (item.hasExceeded) {
+        badgeDiv.classList.add('exceed-warning');
+        badgeDiv.textContent = '⚠️ 超出参考范围';
+      } else if (item.isPerfectMatch) {
+        badgeDiv.classList.add('perfect-match');
+        badgeDiv.textContent = '🎉 完全匹配';
+      } else if (item.isUsingCertified) {
+        badgeDiv.classList.add('certified');
+        badgeDiv.textContent = '📋 据鉴定数据推荐';
+      } else {
+        badgeDiv.classList.add('recommend');
+        badgeDiv.textContent = '⭐ 推荐匹配';
+      }
+      
+      headerDiv.appendChild(titleDiv);
+      headerDiv.appendChild(badgeDiv);
+      
+      // 创建匹配摘要
+      let summaryDiv;
+      if (item.hasExceeded) {
+        summaryDiv = document.createElement('div');
+        summaryDiv.className = 'exceed-summary';
+        summaryDiv.textContent = `⚠️ ${item.exceedCount}个属性已超出参考数据2倍范围`;
+      } else {
+        summaryDiv = document.createElement('div');
+        summaryDiv.className = 'match-summary';
+        if (item.isPerfectMatch) {
+          summaryDiv.textContent = '🎉 恭喜！所有输入属性都与该牌号完全匹配';
+        } else {
+          summaryDiv.textContent = `✅ ${item.matchCount}个属性完全匹配，${inputs.filter(v => v !== null).length - item.matchCount}个属性相近`;
+        }
+      }
+      
+      // 创建属性表格
+      const tableHTML = `
+        <table class="property-table">
+          <tr>
+            <th>属性</th>
+            <th>输入值</th>
+            <th>匹配值</th>
+            <th>数据来源</th>
+            <th>匹配状态</th>
+          </tr>
+          <tr>
+            <td class="property-name">📊 密度</td>
+            <td>
+              ${inputs[0] !== null ? inputs[0] : '-'}
+              ${item.exceedFlags[0] ? '<div class="exceed-warning-text">⚠️ 超出2倍参考</div>' : ''}
+            </td>
+            <td>${prod_density !== null ? prod_density : '-'}</td>
+            <td><span class="data-source">${item.prod_density !== null ? '产品数据' : '鉴定数据'}</span></td>
+            <td class="match-status ${item.exceedFlags[0] ? 'status-exceed' : (inputs[0] !== null && prod_density !== null && inputs[0] === prod_density ? 'status-match' : 'status-mismatch')}">
+              ${item.exceedFlags[0] ? '⚠️ 超出' : (inputs[0] !== null && prod_density !== null && inputs[0] === prod_density ? '✅ 匹配' : '❌ 不匹配')}
+            </td>
+          </tr>
+          <tr>
+            <td class="property-name">💎 硬度</td>
+            <td>
+              ${inputs[1] !== null ? inputs[1] : '-'}
+              ${item.exceedFlags[1] ? '<div class="exceed-warning-text">⚠️ 超出2倍参考</div>' : ''}
+            </td>
+            <td>${prod_hardness !== null ? prod_hardness : '-'}</td>
+            <td><span class="data-source">${item.prod_hardness !== null ? '产品数据' : '鉴定数据'}</span></td>
+            <td class="match-status ${item.exceedFlags[1] ? 'status-exceed' : (inputs[1] !== null && prod_hardness !== null && inputs[1] === prod_hardness ? 'status-match' : 'status-mismatch')}">
+              ${item.exceedFlags[1] ? '⚠️ 超出' : (inputs[1] !== null && prod_hardness !== null && inputs[1] === prod_hardness ? '✅ 匹配' : '❌ 不匹配')}
+            </td>
+          </tr>
+          <tr>
+            <td class="property-name">🧲 矫顽磁力</td>
+            <td>
+              ${inputs[2] !== null ? inputs[2] : '-'}
+              ${item.exceedFlags[2] ? '<div class="exceed-warning-text">⚠️ 超出2倍参考</div>' : ''}
+            </td>
+            <td>${prod_coercivity !== null ? prod_coercivity : '-'}</td>
+            <td><span class="data-source">${item.prod_coercivity !== null ? '产品数据' : '鉴定数据'}</span></td>
+            <td class="match-status ${item.exceedFlags[2] ? 'status-exceed' : (inputs[2] !== null && prod_coercivity !== null && inputs[2] === prod_coercivity ? 'status-match' : 'status-mismatch')}">
+              ${item.exceedFlags[2] ? '⚠️ 超出' : (inputs[2] !== null && prod_coercivity !== null && inputs[2] === prod_coercivity ? '✅ 匹配' : '❌ 不匹配')}
+            </td>
+          </tr>
+          <tr>
+            <td class="property-name">⚡ 钴磁</td>
+            <td>
+              ${inputs[3] !== null ? inputs[3] : '-'}
+              ${item.exceedFlags[3] ? '<div class="exceed-warning-text">⚠️ 超出2倍参考</div>' : ''}
+            </td>
+            <td>${prod_cobalt !== null ? prod_cobalt : '-'}</td>
+            <td><span class="data-source">${item.prod_cobalt !== null ? '产品数据' : '鉴定数据'}</span></td>
+            <td class="match-status ${item.exceedFlags[3] ? 'status-exceed' : (inputs[3] !== null && prod_cobalt !== null && inputs[3] === prod_cobalt ? 'status-match' : 'status-mismatch')}">
+              ${item.exceedFlags[3] ? '⚠️ 超出' : (inputs[3] !== null && prod_cobalt !== null && inputs[3] === prod_cobalt ? '✅ 匹配' : '❌ 不匹配')}
+            </td>
+          </tr>
+          <tr>
+            <td class="property-name">🛡️ 强度</td>
+            <td>
+              ${inputs[4] !== null ? inputs[4] : '-'}
+              ${item.exceedFlags[4] ? '<div class="exceed-warning-text">⚠️ 超出2倍参考</div>' : ''}
+            </td>
+            <td>${prod_strength !== null ? prod_strength : '-'}</td>
+            <td><span class="data-source">${item.prod_strength !== null ? '产品数据' : '鉴定数据'}</span></td>
+            <td class="match-status ${item.exceedFlags[4] ? 'status-exceed' : (inputs[4] !== null && prod_strength !== null && inputs[4] === prod_strength ? 'status-match' : 'status-mismatch')}">
+              ${item.exceedFlags[4] ? '⚠️ 超出' : (inputs[4] !== null && prod_strength !== null && inputs[4] === prod_strength ? '✅ 匹配' : '❌ 不匹配')}
+            </td>
+          </tr>
+        </table>
+      `;
+
+      resultDiv.appendChild(headerDiv);
+      resultDiv.appendChild(summaryDiv);
+      resultDiv.innerHTML += tableHTML;
+      resultsDiv.appendChild(resultDiv);
+    }
+  </script>
+</body>
+</html>
